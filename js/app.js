@@ -2,19 +2,56 @@
 // -------data to store in LS------
 // --------------------------------
 
-const storageData = {};
+const storageData = {
+  loadedData: {},
+};
 
 // --------------------------------
 // -------application data   ------
 // --------------------------------
 
-const dataMain = {};
+const dataMain = {
+  loginPanel: {
+    login: 'Andrei',
+    isAuth: true,
+  },
+};
 
 // --------------------------------
 // -------controller data    ------
 // --------------------------------
 
-const methods = {};
+//   loadToStorage(model, 'review')
+//  review in storage
+function loadToStorage(model, dataName) {
+  const { storage } = model;
+
+  return model._isLocalChecked
+    .then(() => {
+      if (storage.mainData.loadedData[dataName]) throw new Error('test');
+    })
+    .then(() => fetch(storage.mainData.loadedData[`${dataName}Path`]))
+    .then(res => res.json())
+    .then(res => {
+      storage.mainData[dataName] = res;
+      const tmp = { ...storage.mainData.loadedData };
+      tmp[dataName] = true;
+      storage.mainData.loadedData = tmp;
+    })
+    .catch(() => new Promise(res => res()));
+}
+
+const methods = {
+  doSomething() {
+    // const { data } = this._model;
+    // page refresh // this._router.refresh();
+    // storage // const { mainData } = this._model.data;
+    // routing example // this._route(`search.html?query=${search}`);
+    // DOM reference
+    // const { DOMreferences } = this._view;
+    // const el = DOMreferences[`news-${id}`];
+  },
+};
 
 // ---------------------
 // before render section
@@ -22,6 +59,8 @@ const methods = {};
 // const beforeRenderIndex = (model, cb) => { cb(); };
 // ---------------------
 const beforeRenderIndex = (model, cb) => {
+  // const { data } = model;
+  // model._router.goToStartPage());
   cb();
 };
 
@@ -45,7 +84,7 @@ const router = new Router([
     controller,
     beforeRender: beforeRenderIndex,
     startPage: true,
-    title: 'Начало',
+    title: 'Main Page',
   },
 ]);
 // start application

@@ -466,6 +466,7 @@ class View {
         'DIV',
         'MAIN',
         'HEADER',
+        'NAV',
         // 'FORM',
         'FOOTER',
         'LI',
@@ -526,7 +527,7 @@ class Router {
     this.currentPage = '';
     this.startUpdating = false;
     this.routerMap = routerMap.map(
-      ({ pathname, model, startPage, controller, beforeRender ,title}) => ({
+      ({ pathname, model, startPage, controller, beforeRender, title }) => ({
         pathname,
         model,
         controller,
