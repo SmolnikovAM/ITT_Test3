@@ -3,7 +3,18 @@
 // --------------------------------
 
 const storageData = {
-  loadedData: {},
+  loadedData: {
+    users: false,
+    usersPath: '/data/auth.json',
+  },
+  auth: {
+    isAuth: false,
+    isAdmin: false,
+    name: '',
+    login: '',
+    password: '',
+  },
+  users: {},
 };
 
 // --------------------------------
@@ -12,8 +23,10 @@ const storageData = {
 
 const dataMain = {
   loginPanel: {
-    login: 'Andrei',
+    login: '',
+    password: '',
     isAuth: true,
+    loginErrorText: '',
   },
 };
 
@@ -63,6 +76,16 @@ const beforeRenderIndex = (model, cb) => {
   // model._router.goToStartPage());
   cb();
 };
+const beforeRenderLogin = (model, cb) => {
+  // const { data } = model;
+  // model._router.goToStartPage());
+  cb();
+};
+const beforeRenderRegister = (model, cb) => {
+  // const { data } = model;
+  // model._router.goToStartPage());
+  cb();
+};
 
 // ---------------------
 // ---------------------
@@ -85,6 +108,22 @@ const router = new Router([
     beforeRender: beforeRenderIndex,
     startPage: true,
     title: 'Main Page',
+  },
+  {
+    pathname: '/login.html',
+    model,
+    controller,
+    beforeRender: beforeRenderLogin,
+    startPage: false,
+    title: 'Login',
+  },
+  {
+    pathname: '/register.html',
+    model,
+    controller,
+    beforeRender: beforeRenderRegister,
+    startPage: false,
+    title: 'Register',
   },
 ]);
 // start application
