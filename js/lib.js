@@ -212,9 +212,21 @@ class View {
           // eslint-disable-next-line
           el.value = modif.get();
 
+          let isCheckBox = false;
+          if (
+            Reflect.has(el.attributes, 'type') &&
+            el.attributes.type.value === 'checkbox'
+          ) {
+            isCheckBox = true;
+          }
+
           if (el.tagName === 'SELECT') {
             el.addEventListener('change', () => {
               modif.set(el.value);
+            });
+          } else if (isCheckBox) {
+            el.addEventListener('change', () => {
+              modif.set(el.checked);
             });
           } else
             el.addEventListener('keyup', () => {
@@ -223,11 +235,11 @@ class View {
         }
 
         // IF atribute
-        if (attName === 'if') {
-          const modif = this.value(data, param);
-          // eslint-disable-next-line
-          if (!modif) el.style.display = 'none';
-        }
+        // if (attName === 'if') {
+        //   const modif = this.value(data, param);
+        //   // eslint-disable-next-line
+        //   if (!modif) el.style.display = 'none';
+        // }
 
         // click atribute
         // if (attName.indexOf('@blurout') >= 0) {
@@ -366,10 +378,20 @@ class View {
       if (isObjectAtrr && Reflect.has(el.attributes, 'if')) {
         optionsForNodesIn.ifStart = true;
         optionsForNodesIn.ifStartId = optionsForNodesIn.idEl;
-        const modif = this.value(data, el.attributes.if.value);
+        let ifVal = el.attributes.if.value;
+        let cntNot = 0;
+        while (ifVal.trim().indexOf('!') === 0) {
+          cntNot += 1;
+          ifVal = ifVal.replace('!', '');
+        }
+        const modif = this.value(data, ifVal);
         if (modif === undefined)
           throw new Error(`No such field in data ${el.attributes.if.value}`);
         optionsForNodesIn.ifBool = modif;
+        while (cntNot) {
+          optionsForNodesIn.ifBool = !optionsForNodesIn.ifBool;
+          cntNot -= 1;
+        }
         goInside = optionsForNodesIn.ifBool;
       }
 
@@ -645,6 +667,7 @@ class Controller {
     this.methods = methods;
     this.methods._model = model;
     this.methods._route = (...e) => {
+      // eslint-disable-next-line
       console.log(...e);
     };
   }
@@ -660,19 +683,24 @@ class Controller {
 
 // eslint-disable-next-line
 class Storage {
-  constructor(inputData, applicationVersion) {
+  constructor(inputData, applicationVersion, debugMode) {
     const mainData = {};
     const _mainData = {};
     this.applicationVersion = applicationVersion;
 
     // document.addEventListener('DOMContentLoaded', onLoad);
+    // -----------test mode
+    if (debugMode) {
+      // eslint-disable-next-line
+      console.log('STORAGE DEBUG MODE');
+      window.localStorage.clear();
+    }
 
     // -----------test mode
     if (window.localStorage.getItem('version') !== this.applicationVersion) {
       window.localStorage.clear();
       window.localStorage.setItem('version', this.applicationVersion);
     }
-    // -----------test mode
 
     this.mainData = mainData;
     this._mainData = _mainData;

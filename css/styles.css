@@ -23,10 +23,22 @@ body {
 
 .container_header_banner {
   height: 200px;
+  display: grid;
+  grid-template-columns: 40px auto;
+  grid-template-rows: 5px 20px auto;
+  text-align: right;
+}
+
+.container_header_banner_links {
+  grid-column: 2;
+  grid-row: 2;
+}
+.container_header_banner_links > * {
+  margin-right: 40px;
 }
 .container_header_nav {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   text-align: center;
 }
 
@@ -137,7 +149,7 @@ body {
 
   display: grid;
   grid-template-columns: 30px auto 10px auto 30px;
-  grid-template-rows: 10px auto 10px auto 10px auto 10px auto 10px auto 10px;
+  grid-template-rows: repeat(6, 10px auto) 10px;
   grid-template-areas:
     '.      .      .      .      .'
     '.     header header header  .'
@@ -149,6 +161,8 @@ body {
     '. submit submit submit . '
     '.      .      .      .      .'
     '. error error error . '
+    '.      .      .      .      .'
+    '. home home home . '
     '.      .      .      .      .';
 }
 
@@ -156,9 +170,11 @@ body {
   align-self: center;
 }
 
+.text-align-center {
+  text-align: center;
+}
 .container-login_form_header {
   grid-area: header;
-  text-align: center;
 }
 
 .container-login_form_login-label {
@@ -184,6 +200,11 @@ body {
   grid-area: error;
 }
 
+.container-login_form_home {
+  grid-area: home;
+  text-align: center;
+}
+
 .error-red-text {
   color: violet;
   font-weight: 800;
@@ -205,7 +226,7 @@ body {
 
   display: grid;
   grid-template-columns: 30px auto 10px auto 30px;
-  grid-template-rows: repeat(7, 10px auto) 10px;
+  grid-template-rows: repeat(9, 10px auto) 10px;
   grid-template-areas:
     '.      .      .      .      .'
     '.     header header header  .'
@@ -218,9 +239,13 @@ body {
     '.      .      .      .      .'
     '. password-rep-label . password-rep-input . '
     '.      .      .      .      .'
+    '. agree-label . agree-input . '
+    '.      .      .      .      .'
     '. submit submit submit . '
     '.      .      .      .      .'
     '. error error error . '
+    '.      .      .      .      .'
+    '. home home home . '
     '.      .      .      .      .';
 }
 .container-register_form_header {
@@ -256,10 +281,25 @@ body {
   grid-area: password-rep-input;
 }
 
+.container-register_form_agree-label {
+  grid-area: agree-label;
+}
+.container-register_form_agree-input {
+  grid-area: agree-input;
+}
+
 .container-register_form_submit {
   grid-area: submit;
 }
 
 .container-register_form_error {
   grid-area: error;
+}
+
+.container-register_form_home {
+  grid-area: home;
+}
+
+.small-link {
+  font-size: 0.8em;
 }

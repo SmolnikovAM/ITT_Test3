@@ -2,58 +2,88 @@
 <html lang="bg">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
-    <title></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
+  <title></title>
 </head>
 
 <body>
-    <div class="main"></div>
-    <script type="text/template" id="template_/register.html">
-  
-    <main class="container-register">
-        <form class="container-register_form border">
-            <h2 class="container-register_form_header">
-                Регистрация</h2>
-            <label class="container-register_form_name-label 
+  <div class="main"></div>
+</body>
+<script type="text/template" id="template_/register.html">
+  <main class="container-register">
+    <form class="container-register_form border">
+      <h2 class="container-register_form_header">
+          Регистрация</h2>
+      <label class="container-register_form_name-label 
+                     modif-form-text-center">
+        Име</label>
+      <input class="container-register_form_name-input 
+                    modif-form-text-center" 
+                    type="text"
+                    autofocus
+                    model="registerPanel.name">
+
+
+      <label class="container-register_form_login-label 
+                    modif-form-text-center">
+        Логин</label>
+      <input class="container-register_form_login-input 
+              modif-form-text-center" 
+              type="text"
+              model="registerPanel.login">
+
+
+
+
+
+      <label class="container-register_form_password-label 
+                    modif-form-text-center">
+        Парола</label>
+      <input class="container-register_form_password-input
+                    modif-form-text-center" 
+                    type="password"
+                    model="registerPanel.password">
+
+      <label class="container-register_form_password-rep-label 
                           modif-form-text-center">
-                Име</label>
-            <input class="container-register_form_name-input 
-                          modif-form-text-center" type="text">
+        Повторите парола</label>
+      <input class="container-register_form_password-rep-input
+                          modif-form-text-center" 
+                type="password"
+                model="registerPanel.password2">
 
 
-            <label class="container-register_form_login-label 
-                          modif-form-text-center">
-                Логин</label>
-            <input class="container-register_form_login-input 
-                          modif-form-text-center" type="text">
+    <label class="container-register_form_agree-label 
+                modif-form-text-center">
+       Съгласен с условие</label>
+  <input class="container-register_form_agree-input 
+          modif-form-text-center" 
+          type="checkbox"
+          model="registerPanel.agree">
 
 
-
-            <label class="container-register_form_password-label 
-                          modif-form-text-center">
-                Парола</label>
-            <input class="container-register_form_password-input
-                          modif-form-text-center" type="password">
-
-            <label class="container-register_form_password-rep-label 
-                          modif-form-text-center">
-                Повторите парола</label>
-            <input class="container-register_form_password-rep-input
-                          modif-form-text-center" type="password">
-
-            <button class="container-register_form_submit">Натиснете</button>
-            <span class="container-register_form_error
-                         modif-form-text-center 
-                         error-red-text"> Error message</span>
-        </form>
+      <button class="container-register_form_submit"
+              prevent-default
+              @click="checkRegister">Натиснете</button>
+      <span class="container-register_form_error
+                   modif-form-text-center 
+                   error-red-text"> 
+        {{ registerPanel.registerErrorText }}</span>
+        <span class="container-login_form_home
+                    text-align-center">
+                   <a class="small-link"href="/index.html">
+                   начало
+                 </a>
+       </span>
+      </form>
     </main>
 </script>
 
-    <script src="/js/lib.js"></script>
-    <script src="/js/app.js"></script>
-</body>
+<script src="/js/lib.js"></script>
+<script src="/js/app.js"></script>
+
 
 </html>
