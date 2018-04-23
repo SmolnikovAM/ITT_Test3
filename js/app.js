@@ -1,11 +1,17 @@
 // --------------------------------
 // -------data to store in LS------
 // --------------------------------
+let map;
+let okGo;
+
+let mapGoogle;
+const promiseGo = new Promise(res => (okGo = res));
 
 const storageData = {
   loadedData: {
     users: false,
     usersPath: '/data/auth.json',
+    countries: false,
   },
   auth: {
     isAuth: false,
@@ -13,8 +19,12 @@ const storageData = {
     name: '',
     login: '',
     password: '',
+    id: '',
   },
+  savedCountries: [],
+  // [ {userId, country, comment }]
   users: [],
+  countries: [],
 };
 
 // --------------------------------
@@ -35,6 +45,16 @@ const dataMain = {
     registerErrorText: '',
     agree: false,
   },
+  indexPanel: {
+    autocomplete: 'Bulgaria',
+    errorText: '',
+    showCountries: [],
+    sortType: 'nameUp',
+  },
+  showInfoPanel: {
+    country: {},
+    comment: '',
+  },
 };
 
 // --------------------------------
@@ -42,7 +62,8 @@ const dataMain = {
 // --------------------------------
 
 const methods = {
-  doSomething() {
+  doSomething(input) {
+    console.log(input);
     // const { data } = this._model;
     // this._router.refresh();
     // const { mainData } = this._model.data;
@@ -174,6 +195,62 @@ const methods = {
     this.loginPanelClear();
     this._router.refresh();
   },
+  addCountry(input, event) {
+    const { data } = this._model;
+    const { mainData } = data;
+    if (event instanceof KeyboardEvent && event.keyCode === 13) {
+      const userId = mainData.auth.id;
+      const userData = mainData.savedCountries.filter(x => x.userId === userId);
+      if (userData.find(x => x.country === input) === undefined) {
+        mainData.savedCountries = [
+          ...mainData.savedCountries,
+          { userId, country: input, comment: '' },
+        ];
+        data.indexPanel.errorText = 'Country added';
+        console.log('Country added');
+        this._router.refresh();
+      } else {
+        console.log('Already have');
+        data.indexPanel.errorText = 'Already have this country';
+        this._router.refresh();
+      }
+    }
+
+    // const { data } = this._model;
+    // this._router.refresh();
+    // const { mainData } = this._model.data;
+    // this._route(`search.html?query=${search}`);
+    // DOM reference
+    // const { DOMreferences } = this._view;
+    // const el = DOMreferences[`news-${id}`];
+  },
+  showInformation(name) {
+    const url = `about-country.html?name=${name}`;
+    this._router.route(url);
+  },
+  saveComment(country) {
+    const { data } = this._model;
+    const { comment } = data.showInfoPanel;
+    const userId = data.mainData.auth.id;
+    data.mainData.savedCountries = [
+      ...data.mainData.savedCountries.filter(
+        x => !(x.userId === userId && x.country === country),
+      ),
+      { userId, country, comment },
+    ];
+
+    this._router.refresh();
+  },
+  sortName() {
+    const { data } = this._model;
+    const { indexPanel } = data;
+    if (indexPanel.sortType === 'nameUp') {
+      indexPanel.sortType = 'nameDown';
+    } else {
+      indexPanel.sortType = 'nameUp';
+    }
+    this._router.refresh();
+  },
 };
 
 // ---------------------
@@ -202,17 +279,88 @@ function loadToStorage(model, dataName) {
 }
 
 const beforeRenderIndex = (model, cb) => {
-  // const { data } = model;
-  // model._router.goToStartPage();
-  cb();
+  const { data } = model;
+  console.log('refresh');
+  model.data.indexPanel.showCountries = [];
+  if (!data.mainData.auth.isAuth) {
+    cb();
+    model._router.goToStartPage();
+    return;
+  }
+  // console.log(model);
+
+  const isLoaded = () => {
+    if (!model.data.mainData.loadedData.countries)
+      return fetch('https://restcountries.eu/rest/v2/all')
+        .then(res => res.json())
+        .then(res => {
+          model.data.mainData.loadedData.countries = true;
+          model.data.mainData.countries = res;
+        });
+    return new Promise(res => res());
+  };
+
+  isLoaded()
+    .then(() => {
+      const savedUsersCountries = data.mainData.savedCountries.filter(
+        x => data.mainData.auth.id === x.userId,
+      );
+      model.data.indexPanel.showCountries = [];
+      savedUsersCountries.forEach(c => {
+        const countryData = model.data.mainData.countries.find(
+          x => x.name === c.country,
+        );
+        const {
+          name,
+          flag,
+          region,
+          subregion,
+          timezones,
+          capital,
+          currencies,
+          area,
+          population,
+        } = countryData;
+        model.data.indexPanel.showCountries.push({
+          name,
+          flag,
+          region,
+          subregion,
+          timezones,
+          capital,
+          currencies,
+          area,
+          population,
+        });
+
+        if (model.data.indexPanel.sortType === 'nameUp') {
+          model.data.indexPanel.showCountries = model.data.indexPanel.showCountries.sort(
+            (a, b) => (a.name > b.name ? 1 : -1),
+          );
+        } else {
+          model.data.indexPanel.showCountries = model.data.indexPanel.showCountries.sort(
+            (a, b) => (a.name < b.name ? 1 : -1),
+          );
+        }
+      });
+    })
+    .then(cb);
+  // .then(() => {
+  //   const { DOMreferences } = model._router.view;
+  //   const el = DOMreferences['autocomplete'];
+  //   el.value = 'Bulgaria';
+  //   data.indexPanel.autocomplete = 'Bulgaria';
+  // });
 };
 
 const beforeRenderLogin = (model, cb) => {
   const { data } = model;
   if (data.mainData.auth.isAuth) {
-    model._router.goToStartPage();
+    cb();
+    // model._router.route('index.html');
     return;
   }
+
   loadToStorage(model, 'users').then(cb);
 };
 
@@ -220,11 +368,63 @@ const beforeRenderRegister = (model, cb) => {
   const { data } = model;
 
   if (data.mainData.auth.isAuth) {
-    model._router.goToStartPage();
+    model._router.route('index.html');
     return;
   }
   loadToStorage(model, 'users').then(cb);
 };
+
+const beforeRenderAbout = (model, cb) => {
+  const { data } = model;
+  const name = data.params.name;
+  console.log(name);
+  fetch(`https://restcountries.eu/rest/v2/name/${name}`)
+    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+      const d = data.mainData.savedCountries.find(
+        x => x.userId === data.mainData.auth.id,
+      );
+
+      data.showInfoPanel.country = res[0];
+      data.showInfoPanel.comment = '';
+      if (d) {
+        data.showInfoPanel.comment = d.comment;
+      }
+    })
+
+    .then(cb)
+    .then(() => promiseGo)
+    .then(() => {
+      setTimeout(()=>{
+      const {latlng } = data.showInfoPanel.country;
+      // console.log(document.getElementById('googleMap'))
+      const location= new google.maps.LatLng(latlng[0], latlng[1]);
+      const mapProp = {
+        center: location,
+        zoom: 5,
+      };
+
+      mapGoogle = new google.maps.Map(
+        document.getElementById('googleMap'),
+        mapProp,
+      );
+      const marker = new google.maps.Marker({
+        position: location,
+        label: data.showInfoPanel.country.name,
+        map: mapGoogle
+      });
+    },1300);
+
+    });
+};
+
+
+// async function waitmap(){
+//   while(true)
+
+// }
+
 
 function MAIN() {
   const debugMode = false;
@@ -243,19 +443,11 @@ function MAIN() {
   // eslint-disable-next-line
   const router = new Router([
     {
-      pathname: '/index.html',
-      model,
-      controller,
-      beforeRender: beforeRenderIndex,
-      startPage: true,
-      title: 'Main Page',
-    },
-    {
       pathname: '/login.html',
       model,
       controller,
       beforeRender: beforeRenderLogin,
-      startPage: false,
+      startPage: true,
       title: 'Login',
     },
     {
@@ -266,6 +458,22 @@ function MAIN() {
       startPage: false,
       title: 'Register',
     },
+    {
+      pathname: '/index.html',
+      model,
+      controller,
+      beforeRender: beforeRenderIndex,
+      startPage: false,
+      title: 'Main',
+    },
+    {
+      pathname: '/about-country.html',
+      model,
+      controller,
+      beforeRender: beforeRenderAbout,
+      startPage: false,
+      title: 'about country',
+    },
   ]);
   // start application
   // eslint-disable-next-line
@@ -275,5 +483,10 @@ function MAIN() {
     beginFromStartPage: true,
     version: applicationVersion,
   });
+  console.log(model);
 }
 window.addEventListener('DOMContentLoaded', MAIN);
+
+function startMap() {
+  okGo();
+}

@@ -66,10 +66,39 @@ body {
 .container_main {
   grid-column-start: 2;
   display: grid;
-  grid-template-rows: 10px auto 10px;
+  grid-template-rows: 10px 20px 10px auto 10px;
   grid-template-columns: 10px auto 10px auto 10px;
-  height: 400px;
+  height: auto;
+  grid-template-areas:
+    '. . . . .'
+    '. header . autocomplete .'
+    '. . . . .  '
+    '. table1 table1 table1 .'
+    '. . . . .';
 }
+.container_main_header {
+  grid-area: header;
+}
+.container_main_show_info {
+  grid-area: table1;
+}
+.container_main_autocomplete {
+  grid-area: autocomplete;
+}
+.container_main_table {
+  grid-area: table1;
+}
+
+.flag {
+  height: 30px;
+  width: 30px;
+}
+
+.cell-of-table {
+  width: 40px;
+}
+
+/* 
 .container_main_left {
   grid-row: 2 / span 1;
   grid-column: 2 / span 1;
@@ -77,7 +106,7 @@ body {
 .container_main_right {
   grid-row: 2 / span 1;
   grid-column: 4 / span 1;
-}
+} */
 
 .container_footer {
   grid-column-start: 2;
@@ -162,7 +191,7 @@ body {
     '.      .      .      .      .'
     '. error error error . '
     '.      .      .      .      .'
-    '. home home home . '
+    '. register register  register . '
     '.      .      .      .      .';
 }
 
@@ -200,11 +229,10 @@ body {
   grid-area: error;
 }
 
-.container-login_form_home {
-  grid-area: home;
+.container-login_form_register {
+  grid-area: register;
   text-align: center;
 }
-
 .error-red-text {
   color: violet;
   font-weight: 800;
@@ -245,7 +273,7 @@ body {
     '.      .      .      .      .'
     '. error error error . '
     '.      .      .      .      .'
-    '. home home home . '
+    '. login login login . '
     '.      .      .      .      .';
 }
 .container-register_form_header {
@@ -296,10 +324,10 @@ body {
   grid-area: error;
 }
 
-.container-register_form_home {
-  grid-area: home;
+.container-register_form_login {
+  grid-area: login;
 }
 
 .small-link {
-  font-size: 0.8em;
+  font-size: 0.7em;
 }

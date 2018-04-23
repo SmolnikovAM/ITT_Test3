@@ -14,6 +14,12 @@
 
 </body>
 
+<!-- <script type="text/template" id="template_/index.html">
+<div>
+</div>
+</script> -->
+
+
 <script type="text/template" id="template_banner">
   <div class="container_header_banner border">
     <span class="container_header_banner_links">
@@ -21,7 +27,7 @@
       <a if="!mainData.auth.isAuth" href="/register.html">регистрация</a>
       <span if="mainData.auth.isAuth">Hi, <strong> {{ mainData.auth.name }}</strong>!<span>
       <a if="mainData.auth.isAuth" @click="logout" href="">изход</a>
-      <a if="mainData.auth.isAdmin" href="/admin.html">админ</a>
+      <!-- <a if="mainData.auth.isAdmin" href="/admin.html">админ</a> -->
     </span>
   </div>
 </script>
@@ -55,16 +61,59 @@
   <div class="container border">
     <header class="container_header border">
       <component page="banner"></component>
-      <component page="navigation"></component>
+      <!-- <component page="navigation"></component> -->
     </header>
   
     <main class="container_main border">
-      <div class="container_main_left border">
+      <label class="container_main_header
+               text-align-center
+               modif-form-text-center">
+        Please type country </label>
+      <input class="container_main_autocomplete
+      text-align-center"
+      list="countries"
+      :ref="autocomplete"
+      model="indexPanel.autocomplete"
+      @keydown="addCountry(indexPanel.autocomplete)"/>
+      
+      <datalist id="countries">
+          <option foreach data="mainData.countries" :value="name">
+         
+        </datalist>
+
+      <table class="container_main_table">
+        <tr>
+          <td >flag</td>
+          <td  @click="sortName"> name sort {{indexPanel.sortType }}</td>
+            <td>region </td>
+            <td>subregion </td>
+            <td>timezones  </td>
+            <td>area  </td>
+            <td>capital  </td>
+        </tr>
+        <tr foreach data="indexPanel.showCountries" 
+           class="border"
+           @click="showInformation(name)">
+            <td> <img :src="flag" class="flag"></img> </td>
+            <td class="cell-of-table">{{ name }} </td>
+            <td class="cell-of-table">{{ region }} </td>
+            <td class="cell-of-table">{{ subregion }} </td>
+            <td class="cell-of-table">{{ timezones }} </td>
+            <td class="cell-of-table">{{ area }} </td>
+            <td class="cell-of-table">{{ capital }} </td>
+          
+        </tr>
+
+
+      </table>
+      
+      
+      <!-- <div class="container_main_left border">
         main text1
       </div>
       <div class="container_main_right  border">
         main text2
-      </div>
+      </div> -->
       <!-- <component page="aside"></component> -->
     </main>
   
@@ -75,5 +124,7 @@
 
 <script src="/js/lib.js"></script>
 <script src="/js/app.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfic-CYt3lGO1lTxhJZjOdZRHaA2sJ-o&callback=startMap"></script>
+
 
 </html>
