@@ -198,7 +198,12 @@ const methods = {
   addCountry(input, event) {
     const { data } = this._model;
     const { mainData } = data;
-    if (event instanceof KeyboardEvent && event.keyCode === 13) {
+    const { countries } = mainData;
+    if (
+      event instanceof KeyboardEvent &&
+      event.keyCode === 13 &&
+      countries.find(x => x.name === input)
+    ) {
       const userId = mainData.auth.id;
       const userData = mainData.savedCountries.filter(x => x.userId === userId);
       if (userData.find(x => x.country === input) === undefined) {
@@ -381,10 +386,10 @@ const beforeRenderAbout = (model, cb) => {
   fetch(`https://restcountries.eu/rest/v2/name/${name}`)
     .then(res => res.json())
     .then(res => {
-      console.log(res);
       const d = data.mainData.savedCountries.find(
-        x => x.userId === data.mainData.auth.id,
+        x => x.userId === data.mainData.auth.id && x.country === name,
       );
+      console.log(d);
 
       data.showInfoPanel.country = res[0];
       data.showInfoPanel.comment = '';
@@ -396,35 +401,32 @@ const beforeRenderAbout = (model, cb) => {
     .then(cb)
     .then(() => promiseGo)
     .then(() => {
-      setTimeout(()=>{
-      const {latlng } = data.showInfoPanel.country;
-      // console.log(document.getElementById('googleMap'))
-      const location= new google.maps.LatLng(latlng[0], latlng[1]);
-      const mapProp = {
-        center: location,
-        zoom: 5,
-      };
+      setTimeout(() => {
+        const { latlng } = data.showInfoPanel.country;
+        // console.log(document.getElementById('googleMap'))
+        const location = new google.maps.LatLng(latlng[0], latlng[1]);
+        const mapProp = {
+          center: location,
+          zoom: 5,
+        };
 
-      mapGoogle = new google.maps.Map(
-        document.getElementById('googleMap'),
-        mapProp,
-      );
-      const marker = new google.maps.Marker({
-        position: location,
-        label: data.showInfoPanel.country.name,
-        map: mapGoogle
-      });
-    },1300);
-
+        mapGoogle = new google.maps.Map(
+          document.getElementById('googleMap'),
+          mapProp,
+        );
+        const marker = new google.maps.Marker({
+          position: location,
+          label: data.showInfoPanel.country.name,
+          map: mapGoogle,
+        });
+      }, 1300);
     });
 };
-
 
 // async function waitmap(){
 //   while(true)
 
 // }
-
 
 function MAIN() {
   const debugMode = false;
